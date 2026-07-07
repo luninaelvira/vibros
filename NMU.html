@@ -12,7 +12,7 @@
         }
         body {
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            background: #f4f7fc;
+            background: #fffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -94,6 +94,13 @@
         .enterprise {
             font-weight: 550;
             color: #0a253b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .enterprise .icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
         .badge {
             background: #dce5f0;
@@ -222,27 +229,30 @@
             gap: 12px;
             flex-wrap: wrap;
         }
-        .result-panel .answer-grid {
+        .result-panel .answer-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 8px 16px;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
             margin: 8px 0 6px;
         }
-        .answer-item {
-            background: white;
-            padding: 6px 14px;
-            border-radius: 40px;
+        .answer-row {
             display: flex;
             justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dashed #d0ddee;
             font-size: 0.9rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
-            border: 1px solid #dce5f0;
         }
-        .answer-item .label {
+        .answer-row .label {
             color: #1e3d5a;
             font-weight: 450;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .answer-item .value {
+        .answer-row .label .icon {
+            font-size: 1rem;
+        }
+        .answer-row .value {
             font-weight: 650;
             color: #0b2f4a;
         }
@@ -279,7 +289,8 @@
             table { font-size: 0.75rem; min-width: 0; }
             th { padding: 8px 6px; font-size: 0.65rem; }
             td { padding: 8px 6px; }
-            .enterprise { font-size: 0.72rem; }
+            .enterprise { font-size: 0.72rem; gap: 4px; }
+            .enterprise .icon { font-size: 0.9rem; }
             .badge { font-size: 0.6rem; padding: 2px 8px; }
             .input-group input { width: 56px; padding: 5px 2px 5px 6px; font-size: 0.75rem; height: 28px; }
             .input-group span { font-size: 0.75rem; min-width: 12px; }
@@ -287,8 +298,23 @@
             .status-badge { font-size: 0.65rem; padding: 2px 12px; }
             .result-panel { padding: 12px 14px; border-radius: 16px; margin-top: 12px; }
             .result-panel h3 { font-size: 0.9rem; gap: 6px; }
-            .result-panel .answer-grid { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
-            .answer-item { font-size: 0.7rem; padding: 4px 10px; }
+            .result-panel .answer-list { 
+                grid-template-columns: 1fr 1fr; 
+                gap: 2px 12px;
+            }
+            .answer-row { 
+                font-size: 0.7rem; 
+                padding: 3px 0;
+            }
+            .answer-row .label {
+                font-size: 0.65rem;
+            }
+            .answer-row .label .icon {
+                font-size: 0.8rem;
+            }
+            .answer-row .value {
+                font-size: 0.7rem;
+            }
             .footnote { font-size: 0.7rem; padding: 8px 12px; }
             .footnote ul { padding-left: 14px; }
             .actions { gap: 8px; margin: 12px 0 6px; }
@@ -296,7 +322,10 @@
         }
 
         @media (max-width: 440px) {
-            .result-panel .answer-grid { grid-template-columns: 1fr; }
+            .result-panel .answer-list { 
+                grid-template-columns: 1fr; 
+                gap: 2px;
+            }
             .input-group input { width: 48px; }
             .actions { flex-direction: column; align-items: stretch; }
             .btn-group { justify-content: center; }
@@ -326,7 +355,12 @@
             </thead>
             <tbody>
                 <tr v-for="(item, idx) in enterprises" :key="idx">
-                    <td class="enterprise">{{ item.name }}</td>
+                    <td>
+                        <div class="enterprise">
+                            <span class="icon">{{ item.icon }}</span>
+                            {{ item.name }}
+                        </div>
+                    </td>
                     <td><span class="badge forecast-badge">{{ item.forecast }}</span></td>
                     <td><span class="badge degree-badge">{{ item.degree || '—' }}</span></td>
                     <td>
@@ -356,21 +390,22 @@
             <span>📋 Правильные ответы</span>
             <span style="font-size: 0.75rem; font-weight: 400; background: #d0dfee; padding: 2px 14px; border-radius: 40px;">нажмите «Сбросить» чтобы попробовать снова</span>
         </h3>
-        <div class="answer-grid">
-            <div class="answer-item" v-for="(item, idx) in enterprises" :key="'res'+idx">
-                <span class="label">{{ shorten(item.name) }}</span>
+        <div class="answer-list">
+            <div class="answer-row" v-for="(item, idx) in enterprises" :key="'res'+idx">
+                <span class="label"><span class="icon">{{ item.icon }}</span> {{ item.name }}</span>
                 <span class="value">{{ item.correct }}%</span>
             </div>
         </div>
         <div class="footnote">
             <strong>📌 Почему именно так?</strong>
             <ul>
-                <li><strong>ТЭЦ (жизнеобеспечение), общий прогноз</strong> — 15% (базовое снижение для объектов жизнеобеспечения при общем прогнозе).</li>
+                <li><strong>ТЭЦ, общий прогноз</strong> — 15% (базовое снижение для объектов жизнеобеспечения при общем прогнозе).</li>
                 <li><strong>Химзавод, общий прогноз</strong> — 20% (общий прогноз, категория 1–2, универсальный норматив).</li>
-                <li><strong>Котельная (жизнеобеспечение), спец. прогноз, 1-я степень</strong> — 5% (минимальное снижение для жизнеобеспечения при 1-й степени).</li>
+                <li><strong>Котельная, спец. прогноз, 1-я степень</strong> — 5% (минимальное снижение для жизнеобеспечения при 1-й степени).</li>
                 <li><strong>Мясокомбинат, спец. прогноз, 2-я степень</strong> — 20% (стандарт для 2-й степени, специализированный прогноз).</li>
-                <li><strong>ТЭЦ (жизнеобеспечение), спец. прогноз, 3-я степень</strong> — 20% (для жизнеобеспечения при 3-й степени установлено 20%).</li>
+                <li><strong>ТЭЦ, спец. прогноз, 3-я степень</strong> — 20% (для жизнеобеспечения при 3-й степени установлено 20%).</li>
                 <li><strong>Металлургический завод, спец. прогноз, 3-я степень</strong> — 40% (максимальное снижение для металлургии при 3-й степени НМУ).</li>
+                <li><strong>Предприятие по обращению с отходами, спец. прогноз, 2-я степень</strong> — 25% (согласно отраслевым нормативам для объектов размещения отходов).</li>
             </ul>
             <div style="margin-top: 8px; background: #d4e2f2; padding: 6px 14px; border-radius: 40px; display: inline-block; font-size: 0.85rem;">
                 ⚡ Приказ Минприроды № 651.
@@ -386,12 +421,13 @@
             el: '#app',
             data: {
                 enterprises: [
-                    { name: 'ТЭЦ (жизнеобеспечение)', forecast: 'Общий', degree: '—', correct: 15, userInput: null, checked: false },
-                    { name: 'Химзавод', forecast: 'Общий', degree: '—', correct: 20, userInput: null, checked: false },
-                    { name: 'Котельная (жизнеобеспечение)', forecast: 'Специализированный', degree: '1-я', correct: 5, userInput: null, checked: false },
-                    { name: 'Мясокомбинат', forecast: 'Специализированный', degree: '2-я', correct: 20, userInput: null, checked: false },
-                    { name: 'ТЭЦ (жизнеобеспечение)', forecast: 'Специализированный', degree: '3-я', correct: 20, userInput: null, checked: false },
-                    { name: 'Металлургический завод', forecast: 'Специализированный', degree: '3-я', correct: 40, userInput: null, checked: false }
+                    { name: 'ТЭЦ', icon: '🏭', forecast: 'Общий', degree: '—', correct: 15, userInput: null, checked: false },
+                    { name: 'Химзавод', icon: '🧪', forecast: 'Общий', degree: '—', correct: 20, userInput: null, checked: false },
+                    { name: 'Котельная', icon: '🔥', forecast: 'Специализированный', degree: '1-я', correct: 5, userInput: null, checked: false },
+                    { name: 'Мясокомбинат', icon: '🥩', forecast: 'Специализированный', degree: '2-я', correct: 20, userInput: null, checked: false },
+                    { name: 'ТЭЦ', icon: '🏭', forecast: 'Специализированный', degree: '3-я', correct: 20, userInput: null, checked: false },
+                    { name: 'Металлургический завод', icon: '⚙️', forecast: 'Специализированный', degree: '3-я', correct: 40, userInput: null, checked: false },
+                    { name: 'Предприятие по обращению с отходами', icon: '♻️', forecast: 'Специализированный', degree: '2-я', correct: 25, userInput: null, checked: false }
                 ],
                 showResults: false
             },
@@ -413,12 +449,6 @@
                         item.checked = false;
                     });
                     this.showResults = false;
-                },
-                shorten(name) {
-                    if (name.length > 22) {
-                        return name.replace(' (жизнеобеспечение)', ' (ЖО)').substring(0, 24) + '…';
-                    }
-                    return name;
                 }
             }
         });
