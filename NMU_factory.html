@@ -5,59 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Интерактив: Собери план НМУ</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: #eef2f5; padding: 15px; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 3px 12px rgba(0,0,0,0.08); }
         
-        /* Header */
-        .header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
-        .header h1 { margin-bottom: 10px; font-size: 24px; }
-        .header p { font-size: 14px; opacity: 0.9; }
+        .header { background: #2c3e50; color: white; padding: 15px 20px; text-align: center; }
+        .header h1 { font-size: 20px; margin-bottom: 5px; }
+        .header p { font-size: 13px; opacity: 0.85; }
 
-        /* Image */
-        .image-container { width: 100%; height: 250px; overflow: hidden; background: #333; }
-        .image-container img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+        .image-container { width: 100%; background: #ddd; text-align: center; }
+        .image-container img { max-width: 100%; height: auto; display: block; margin: 0 auto; max-height: 220px; object-fit: cover; }
 
-        /* Game Board */
-        .game-board { display: flex; flex-wrap: wrap; padding: 20px; gap: 20px; min-height: 500px; }
+        /* Адаптивная сетка */
+        .game-board { display: flex; flex-direction: column; padding: 15px; gap: 15px; }
         
-        .column { flex: 1; min-width: 300px; border: 2px dashed #ccc; border-radius: 8px; padding: 15px; background: #fafafa; transition: all 0.3s; }
-        .column h2 { text-align: center; font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        /* На широких экранах (от 801px) переключаем в 2 колонки */
+        @media (min-width: 801px) {
+            .game-board { flex-direction: row; align-items: flex-start; }
+            .card-column { flex: 1; }
+            .drop-columns { flex: 1.5; display: flex; flex-direction: row; gap: 15px; }
+        }
+
+        .card-column h2, .drop-column h2 { font-size: 15px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #eee; display: flex; align-items: center; gap: 8px; }
         
-        .drop-zone { min-height: 300px; display: flex; flex-direction: column; gap: 10px; }
+        /* Зоны сброса */
+        .zone { border: 2px dashed #bbb; border-radius: 6px; padding: 10px; background: #f8f9fa; min-height: 100px; transition: background 0.2s; }
+        .zone.drag-over { background: #eaf4f9; border-color: #3498db; }
+        .zone.correct { border-color: #27ae60; background: #eafaf1; }
+        .zone.wrong { border-color: #e74c3c; background: #fdedec; }
         
-        /* Drag Items */
-        .card { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: grab; user-select: none; transition: 0.2s; position: relative; }
-        .card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .drop-column { flex: 1; margin-bottom: 10px; }
+
+        /* Карточки */
+        .card-list { display: flex; flex-direction: column; gap: 8px; }
+        .card { background: white; border: 1px solid #ccc; padding: 10px 12px; border-radius: 5px; font-size: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); cursor: grab; user-select: none; transition: 0.15s; }
+        .card:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.08); border-color: #999; }
         .card:active { cursor: grabbing; }
-        .card.dragging { opacity: 0.5; transform: scale(0.95); }
-        
-        .correct-zone { border-color: #27ae60; background: #eafaf1; }
-        .wrong-zone { border-color: #e74c3c; background: #fdedec; }
+        .card.dragging { opacity: 0.4; transform: scale(0.97); }
 
-        /* Action Buttons */
-        .controls { padding: 20px; text-align: center; border-top: 1px solid #eee; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-        .btn { padding: 10px 25px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        /* Кнопки */
+        .controls { padding: 15px; text-align: center; border-top: 1px solid #eee; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 8px 18px; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-check { background: #2980b9; color: white; }
         .btn-check:hover { background: #1c6c9c; }
-        .btn-reset { background: #95a5a6; color: white; }
-        .btn-reset:hover { background: #7f8c8d; }
+        .btn-reset { background: #7f8c8d; color: white; }
+        .btn-reset:hover { background: #6c7a7a; }
 
-        /* Modal for Results */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        /* Модальное окно */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 999; }
         .modal.active { display: flex; }
-        .modal-content { background: white; max-width: 600px; width: 90%; padding: 30px; border-radius: 10px; max-height: 80vh; overflow-y: auto; position: relative; }
-        .modal-header { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .modal-header h2 { margin: 0; }
-        .modal-body p { margin-bottom: 10px; line-height: 1.5; color: #333; }
-        .modal-footer { margin-top: 20px; text-align: right; }
-        .btn-close { background: #e74c3c; color: white; padding: 8px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        .btn-close:hover { background: #c0392b; }
-
-        .correct { color: #27ae60; font-weight: bold; }
-        .incorrect { color: #e74c3c; font-weight: bold; }
+        .modal-content { background: white; max-width: 500px; width: 90%; padding: 20px; border-radius: 8px; max-height: 80vh; overflow-y: auto; }
+        .modal-body { font-size: 14px; line-height: 1.5; color: #333; }
+        .modal-body ul { margin: 8px 0 10px 20px; }
+        .modal-footer { margin-top: 15px; text-align: right; }
+        .btn-close { background: #e74c3c; color: white; padding: 6px 16px; border: none; border-radius: 4px; cursor: pointer; }
         
-        @media (max-width: 768px) { .game-board { flex-direction: column; } }
+        .ok { color: #27ae60; font-weight: 600; }
+        .no { color: #e74c3c; font-weight: 600; }
+        .explain { font-size: 13px; color: #555; background: #f9f9f9; padding: 8px; border-radius: 4px; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -65,57 +70,53 @@
 <div class="container">
     <div class="header">
         <h1>Задание 4. «Собери план НМУ»</h1>
-        <p>Перетащите мероприятия в нужную колонку. Учитывайте технологию и законодательство.</p>
+        <p>Перетащите мероприятия: в "План" — разрешённые, в "Исключить" — опасные или незаконные.</p>
     </div>
 
     <div class="image-container">
-        <!-- ВАЖНО: Замените 'factory.jpg' на имя вашего файла с картинкой -->
-        <img src="factory.jpg" alt="Стекольный завод" onerror="this.src='https://via.placeholder.com/1200x250?text=Здесь+будет+ваша+картинка+завода'">
+        <img src="factory.jpg" alt="Завод" onerror="this.src='https://placehold.co/1000x200/e2e2e2/333?text=Изображение+завода'">
     </div>
 
     <div class="game-board">
-        <!-- Left Column: Cards to Drag -->
-        <div class="column" id="card-pool">
-            <h2>📋 Список мероприятий (Перетащи меня)</h2>
-            <div class="drop-zone" id="pool-zone">
-                <div class="card" draggable="true" data-id="1">Остановить стекловаренную печь на 3 дня.</div>
-                <div class="card" draggable="true" data-id="2">Запретить использование дизельного генератора.</div>
-                <div class="card" draggable="true" data-id="3">Запретить движение автотранспорта без производственной необходимости.</div>
-                <div class="card" draggable="true" data-id="4">Снизить температуру в печи на 50°C.</div>
-                <div class="card" draggable="true" data-id="5">Запретить проезд тепловоза на время НМУ.</div>
-                <div class="card" draggable="true" data-id="6">Остановить на ремонт газоочистку, чтобы потом работала лучше.</div>
-                <div class="card" draggable="true" data-id="7">Провести полив дорог для пылеподавления.</div>
+        <!-- Колонка с карточками -->
+        <div class="card-column">
+            <h2>📋 Мероприятия</h2>
+            <div class="zone" id="pool-zone">
+                <div class="card-list">
+                    <div class="card" draggable="true" data-id="1">Остановить стекловаренную печь на 3 дня.</div>
+                    <div class="card" draggable="true" data-id="2">Запретить использование дизельного генератора.</div>
+                    <div class="card" draggable="true" data-id="3">Запретить проезд автотранспорта без нужды.</div>
+                    <div class="card" draggable="true" data-id="4">Снизить температуру печи на 50°C.</div>
+                    <div class="card" draggable="true" data-id="5">Запретить передвижение тепловоза.</div>
+                    <div class="card" draggable="true" data-id="6">Остановить газоочистку на ремонт (для улучшения).</div>
+                    <div class="card" draggable="true" data-id="7">Провести полив дорог для пылеподавления.</div>
+                </div>
             </div>
         </div>
 
-        <!-- Right Column: Drop Zones -->
-        <div style="display: flex; gap: 20px; flex: 2; flex-wrap: wrap;">
-            <div class="column correct-zone" id="correct-column">
-                <h2>✅ Включить в план НМУ</h2>
-                <div class="drop-zone" id="correct-zone"></div>
+        <!-- Колонки сброса (на узких экранах встают вертикально) -->
+        <div class="drop-columns">
+            <div class="drop-column">
+                <h2>✅ План НМУ</h2>
+                <div class="zone correct" id="correct-zone"></div>
             </div>
-            <div class="column wrong-zone" id="wrong-column">
-                <h2>❌ Исключить (Нельзя применять)</h2>
-                <div class="drop-zone" id="wrong-zone"></div>
+            <div class="drop-column">
+                <h2>❌ Исключить</h2>
+                <div class="zone wrong" id="wrong-zone"></div>
             </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn btn-check" onclick="checkAnswers()">🔍 Проверить ответ</button>
-        <button class="btn btn-reset" onclick="resetGame()">🔄 Начать заново</button>
+        <button class="btn btn-check" onclick="checkAnswers()">🔍 Проверить</button>
+        <button class="btn btn-reset" onclick="resetGame()">🔄 Сбросить</button>
     </div>
 </div>
 
-<!-- Modal for Explanation -->
+<!-- Модалка -->
 <div class="modal" id="resultModal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modal-title">Результаты</h2>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <!-- Content generated by JS -->
-        </div>
+        <div id="modal-body" class="modal-body"></div>
         <div class="modal-footer">
             <button class="btn-close" onclick="closeModal()">Закрыть</button>
         </div>
@@ -123,154 +124,71 @@
 </div>
 
 <script>
-    // Правильные ответы (ID карточек, которые должны быть в правильной колонке)
     const correctAnswers = ['2', '3', '5', '7'];
-    let draggedItem = null;
+    let dragged = null;
 
-    // --- DRAG & DROP LOGIC ---
-    document.addEventListener('dragstart', function(event) {
-        if (event.target.classList.contains('card')) {
-            draggedItem = event.target;
-            setTimeout(() => event.target.classList.add('dragging'), 0);
+    document.addEventListener('dragstart', e => {
+        if(e.target.classList.contains('card')) {
+            dragged = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
         }
     });
-
-    document.addEventListener('dragend', function(event) {
-        if (event.target.classList.contains('card')) {
-            event.target.classList.remove('dragging');
-            draggedItem = null;
-        }
+    document.addEventListener('dragend', e => {
+        if(e.target.classList.contains('card')) e.target.classList.remove('dragging');
+        dragged = null;
     });
 
-    // Настраиваем зоны сброса
-    const dropZones = document.querySelectorAll('.drop-zone');
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', function(event) {
-            event.preventDefault(); // Разрешаем сброс
-        });
-
-        zone.addEventListener('drop', function(event) {
-            event.preventDefault();
-            if (draggedItem) {
-                // Если отпускаем в ту же колонку, откуда взяли (кроме исходной), просто перемещаем
-                // Запрещаем сбрасывать в исходную колонку, чтобы не запутаться (опционально, можно разрешить)
-                if (zone.id === 'pool-zone') {
-                    // Если хотим вернуть обратно, разрешаем
-                }
-                zone.appendChild(draggedItem);
-            }
+    document.querySelectorAll('.zone').forEach(zone => {
+        zone.addEventListener('dragover', e => { e.preventDefault(); });
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            if(dragged) zone.appendChild(dragged);
         });
     });
 
-    // --- CHECK & LOGIC ---
     function checkAnswers() {
-        const correctZone = document.getElementById('correct-zone');
-        const wrongZone = document.getElementById('wrong-zone');
-        const poolZone = document.getElementById('pool-zone');
+        const cZone = document.getElementById('correct-zone');
+        const wZone = document.getElementById('wrong-zone');
+        const pZone = document.getElementById('pool-zone');
+        let correct = 0, wrong = [], missed = [];
 
-        let score = 0;
-        let correctItems = [];
-        let wrongItems = [];
-        let missingItems = [];
-
-        // 1. Проверяем, что в правильной зоне только правильные элементы
-        const itemsInCorrect = correctZone.querySelectorAll('.card');
-        itemsInCorrect.forEach(card => {
-            if (correctAnswers.includes(card.getAttribute('data-id'))) {
-                score++;
-                card.style.borderColor = "#27ae60";
-                card.style.background = "#eafaf1";
-                correctItems.push(card.innerText);
-            } else {
-                card.style.borderColor = "#e74c3c";
-                card.style.background = "#fdedec";
-                wrongItems.push(card.innerText);
-            }
+        cZone.querySelectorAll('.card').forEach(c => {
+            if(correctAnswers.includes(c.dataset.id)) { correct++; } else { wrong.push(c.innerText); }
+        });
+        wZone.querySelectorAll('.card').forEach(c => {
+            if(correctAnswers.includes(c.dataset.id)) missed.push(c.innerText);
+        });
+        pZone.querySelectorAll('.card').forEach(c => {
+            if(correctAnswers.includes(c.dataset.id)) missed.push(c.innerText);
         });
 
-        // 2. Проверяем, что ничего нужного не осталось в пуле или в неправильной зоне
-        const itemsInWrong = wrongZone.querySelectorAll('.card');
-        itemsInWrong.forEach(card => {
-            if (correctAnswers.includes(card.getAttribute('data-id'))) {
-                card.style.borderColor = "#e74c3c";
-                card.style.background = "#fdedec";
-                missingItems.push(card.innerText);
-            } else {
-                // Правильно, что оставили здесь
-                card.style.borderColor = "#27ae60";
-                card.style.background = "#eafaf1";
-            }
-        });
-
-        const itemsInPool = poolZone.querySelectorAll('.card');
-        itemsInPool.forEach(card => {
-            if (correctAnswers.includes(card.getAttribute('data-id'))) {
-                card.style.borderColor = "#e74c3c";
-                card.style.background = "#fdedec";
-                missingItems.push(card.innerText);
-            }
-        });
-
-        // -- Generate Report --
-        let htmlContent = `<p><strong>Ваш результат:</strong> ${score} / ${correctAnswers.length} правильных действий.</p>`;
-        
-        if (score === correctAnswers.length && wrongItems.length === 0 && missingItems.length === 0) {
-            htmlContent += `<p style="color:#27ae60; font-weight:bold; font-size:1.2em;">🎉 Отлично! Вы правильно составили план НМУ.</p>`;
+        let html = `<p><strong>Результат:</strong> ${correct} / ${correctAnswers.length}</p>`;
+        if(correct === 4 && wrong.length === 0 && missed.length === 0) {
+            html += `<p style="color:#27ae60; font-size:16px; font-weight:bold;">🎉 Верно! Вы спасли завод от штрафов.</p>`;
         } else {
-            if (missingItems.length > 0) {
-                htmlContent += `<p class="incorrect">⚠️ Вы забыли включить в план:</p><ul>`;
-                missingItems.forEach(text => htmlContent += `<li class="incorrect">${text}</li>`);
-                htmlContent += `</ul>`;
-            }
-            if (wrongItems.length > 0) {
-                htmlContent += `<p class="incorrect">⛔ Вы ошибочно включили в план:</p><ul>`;
-                wrongItems.forEach(text => htmlContent += `<li class="incorrect">${text}</li>`);
-                htmlContent += `</ul>`;
-            }
+            if(missed.length) html += `<p class="no">⚠️ Не хватает в плане:</p><ul>${missed.map(t=>`<li class="no">${t}</li>`).join('')}</ul>`;
+            if(wrong.length) html += `<p class="no">⛔ Ошибочно включили:</p><ul>${wrong.map(t=>`<li class="no">${t}</li>`).join('')}</ul>`;
         }
 
-        // -- Explanation --
-        htmlContent += `<hr style="margin: 15px 0;">`;
-        htmlContent += `<h3>Разбор ошибок (Почему так):</h3>`;
-        htmlContent += `<p><b>1. Почему пункт 1 (Остановка печи) не подходит?</b><br>
-        <span style="color: #555; font-size: 0.9em;">Печь нельзя остановить, это нарушит технологию. Расплав застынет, потребуется недельный перезапуск с колоссальными выбросами.</span></p>`;
-        htmlContent += `<p><b>2. Почему пункт 4 (Снижение температуры) рискован?</b><br>
-        <span style="color: #555; font-size: 0.9em;">Может испортить продукцию. Изменится вязкость стекломассы, пойдет 100% брак и застывание в оборудовании.</span></p>`;
-        htmlContent += `<p><b>3. Почему пункт 6 (Остановка газоочистки) запрещён?</b><br>
-        <span style="color: #555; font-size: 0.9em;">П. 9 Приказа № 651 запрещает остановку газоочистки в период НМУ. Это приведет к выбросу без фильтрации.</span></p>`;
+        // Разбор
+        html += `<hr style="margin:12px 0;"><h3>Разбор ошибок:</h3>
+        <p><b>П.1 (Остановка печи):</b> <span class="explain">Нарушает технологию. Расплав застынет, потребуется недельный перезапуск с выбросами.</span></p>
+        <p><b>П.4 (Снижение температуры):</b> <span class="explain">100% брак. Изменится вязкость, стекло застынет в оборудовании.</span></p>
+        <p><b>П.6 (Ремонт газоочистки):</b> <span class="explain">Законодательно запрещён. П.9 Приказа № 651 запрещает отключать очистку в НМУ.</span></p>`;
 
-        document.getElementById('modal-body').innerHTML = htmlContent;
+        document.getElementById('modal-body').innerHTML = html;
         document.getElementById('resultModal').classList.add('active');
     }
 
     function resetGame() {
-        const poolZone = document.getElementById('pool-zone');
-        const correctZone = document.getElementById('correct-zone');
-        const wrongZone = document.getElementById('wrong-zone');
-
-        // Возвращаем все карточки обратно в пул
-        const allCards = document.querySelectorAll('.card');
-        allCards.forEach(card => {
-            card.style.borderColor = "#ddd";
-            card.style.background = "white";
-            poolZone.appendChild(card);
+        const pZone = document.getElementById('pool-zone');
+        document.querySelectorAll('.card').forEach(c => {
+            c.style.border = "1px solid #ccc"; c.style.background = "white";
+            pZone.querySelector('.card-list').appendChild(c);
         });
-
         closeModal();
     }
-
-    function closeModal() {
-        document.getElementById('resultModal').classList.remove('active');
-    }
-
-    // Закрытие по клику вне модалки
-    window.onclick = function(event) {
-        const modal = document.getElementById('resultModal');
-        if (event.target == modal) {
-            modal.classList.remove('active');
-        }
-    }
+    function closeModal() { document.getElementById('resultModal').classList.remove('active'); }
 </script>
-
 </body>
 </html>
