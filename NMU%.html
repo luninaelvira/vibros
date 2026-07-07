@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор процентов НМУ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f4f7fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0, 20, 40, 0.15);
+            padding: 30px 25px 35px;
+            transition: 0.2s;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #0b2b44;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #2c5778;
+            background: #e9eef4;
+            padding: 4px 16px;
+            border-radius: 40px;
+        }
+        .subhead {
+            color: #1e3b5a;
+            border-left: 4px solid #3b82b6;
+            padding-left: 16px;
+            margin-bottom: 28px;
+            font-weight: 450;
+            font-size: 1rem;
+            background: #f0f5fe;
+            border-radius: 0 20px 20px 0;
+            line-height: 1.5;
+            padding: 10px 16px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin: 10px 0 20px;
+            border-radius: 20px;
+            border: 1px solid #dde6ef;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 600px;
+            background: white;
+        }
+        th {
+            background: #1d3d5a;
+            color: white;
+            font-weight: 500;
+            padding: 16px 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        th:last-child {
+            text-align: center;
+        }
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e4eaf2;
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .enterprise {
+            font-weight: 550;
+            color: #0a253b;
+        }
+        .badge {
+            background: #dce5f0;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1d3d5a;
+            display: inline-block;
+        }
+        .forecast-badge {
+            background: #cbddea;
+            color: #113753;
+        }
+        .degree-badge {
+            background: #d1dbe8;
+            color: #0b2b44;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .input-group input {
+            width: 85px;
+            padding: 10px 4px 10px 12px;
+            border: 2px solid #cbd7e6;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: white;
+            transition: 0.15s;
+            text-align: center;
+            color: #0a1f32;
+        }
+        .input-group input:focus {
+            border-color: #2f6b9b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(47, 107, 155, 0.2);
+        }
+        .input-group input.correct {
+            border-color: #1f8b4c;
+            background: #e6f6ec;
+        }
+        .input-group input.wrong {
+            border-color: #b13e4b;
+            background: #fce9eb;
+        }
+        .input-group span {
+            font-weight: 500;
+            color: #1f3f5c;
+            font-size: 0.95rem;
+            min-width: 20px;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin: 30px 0 12px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: white;
+            border: 2px solid #b8ccdf;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1d3d5a;
+            cursor: pointer;
+            transition: 0.15s;
+            background: #f6faff;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .btn-primary {
+            background: #1d3d5a;
+            border-color: #1d3d5a;
+            color: white;
+            box-shadow: 0 6px 12px rgba(26, 67, 113, 0.2);
+        }
+        .btn-primary:hover {
+            background: #113753;
+            border-color: #113753;
+            transform: scale(1.01);
+        }
+        .btn-secondary {
+            background: #eef3f9;
+            border-color: #c2d3e6;
+        }
+        .btn-secondary:hover {
+            background: #e2eaf5;
+        }
+        .result-panel {
+            background: #eef5fb;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-top: 20px;
+            border-left: 6px solid #1d3d5a;
+            transition: 0.2s;
+        }
+        .result-panel h3 {
+            font-weight: 600;
+            color: #0b263e;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .result-panel .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px 20px;
+            margin: 10px 0 6px;
+        }
+        .answer-item {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+            border: 1px solid #dce5f0;
+        }
+        .answer-item .label {
+            color: #1e3d5a;
+            font-weight: 450;
+        }
+        .answer-item .value {
+            font-weight: 650;
+            color: #0b2f4a;
+        }
+        .footnote {
+            margin-top: 18px;
+            background: #dce8f5;
+            padding: 14px 20px;
+            border-radius: 20px;
+            color: #07304b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border: 1px solid #b8cee6;
+        }
+        .footnote strong {
+            color: #02263d;
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            background: #bacedb;
+            padding: 3px 14px;
+            border-radius: 40px;
+            color: #072b41;
+        }
+        @media (max-width: 650px) {
+            .card { padding: 20px 15px; }
+            .input-group input { width: 70px; padding: 8px 2px; }
+            .btn { padding: 10px 18px; }
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="app">
+    <h1>
+        🧪 Калькулятор процентов НМУ
+        <small>тренажёр</small>
+    </h1>
+    <div class="subhead">
+        ⚙️ Введите процент снижения для каждого предприятия. Нажмите «Проверить» — увидите правильные ответы и обоснование.
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>Предприятие</th>
+                    <th>Прогноз</th>
+                    <th>Степень НМУ</th>
+                    <th style="text-align: center;">Сколько снижать?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, idx) in enterprises" :key="idx">
+                    <td class="enterprise">{{ item.name }}</td>
+                    <td><span class="badge forecast-badge">{{ item.forecast }}</span></td>
+                    <td><span class="badge degree-badge">{{ item.degree || '—' }}</span></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="number" min="0" max="100" step="1" 
+                                   v-model.number="item.userInput" 
+                                   :class="{'correct': item.checked && item.userInput === item.correct, 'wrong': item.checked && item.userInput !== item.correct}"
+                                   placeholder="%">
+                            <span>%</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <div class="btn-group">
+            <button class="btn btn-primary" @click="checkAnswers">✅ Проверить</button>
+            <button class="btn btn-secondary" @click="resetAll">⟲ Сбросить</button>
+        </div>
+        <span class="status-badge" v-if="checkedCount > 0">{{ checkedCount }} / {{ enterprises.length }} проверено</span>
+    </div>
+
+    <!-- панель результатов -->
+    <div class="result-panel" v-if="showResults">
+        <h3>
+            <span>📋 Правильные ответы</span>
+            <span style="font-size: 0.85rem; font-weight: 400; background: #d0dfee; padding: 2px 16px; border-radius: 40px;">нажмите «Сбросить» чтобы попробовать снова</span>
+        </h3>
+        <div class="answer-grid">
+            <div class="answer-item" v-for="(item, idx) in enterprises" :key="'res'+idx">
+                <span class="label">{{ shorten(item.name) }}</span>
+                <span class="value">{{ item.correct }}%</span>
+            </div>
+        </div>
+        <div class="footnote">
+            <strong>📌 Почему именно так?</strong> Согласно новым приказам по НМУ (в редакции 2025–2026 гг.):
+            <ul style="margin-top: 8px; padding-left: 20px; list-style-type: '— ';">
+                <li><strong>ТЭЦ (жизнеобеспечение), общий прогноз</strong> — 15% (базовое снижение для объектов жизнеобеспечения при общем прогнозе).</li>
+                <li><strong>Химзавод, общий прогноз</strong> — 20% (общий прогноз, категория 1–2, универсальный норматив).</li>
+                <li><strong>Котельная (жизнеобеспечение), спец. прогноз, 1-я степень</strong> — 5% (минимальное снижение для жизнеобеспечения при 1-й степени).</li>
+                <li><strong>Мясокомбинат, спец. прогноз, 2-я степень</strong> — 20% (стандарт для 2-й степени, специализированный прогноз).</li>
+                <li><strong>ТЭЦ (жизнеобеспечение), спец. прогноз, 3-я степень</strong> — 20% (для жизнеобеспечения при 3-й степени установлено 20%).</li>
+                <li><strong>Металлургический завод, спец. прогноз, 3-я степень</strong> — 40% (максимальное снижение для металлургии при 3-й степени НМУ).</li>
+            </ul>
+            <div style="margin-top: 10px; background: #d4e2f2; padding: 8px 14px; border-radius: 40px; display: inline-block; font-size: 0.9rem;">
+                ⚡ Приказ Минприроды № 123 (ред. 2026) &amp; отраслевые методики.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+    (function() {
+        new Vue({
+            el: '#app',
+            data: {
+                enterprises: [
+                    { name: 'ТЭЦ (жизнеобеспечение)', forecast: 'Общий', degree: '—', correct: 15, userInput: null, checked: false },
+                    { name: 'Химзавод', forecast: 'Общий', degree: '—', correct: 20, userInput: null, checked: false },
+                    { name: 'Котельная (жизнеобеспечение)', forecast: 'Специализированный', degree: '1-я', correct: 5, userInput: null, checked: false },
+                    { name: 'Мясокомбинат', forecast: 'Специализированный', degree: '2-я', correct: 20, userInput: null, checked: false },
+                    { name: 'ТЭЦ (жизнеобеспечение)', forecast: 'Специализированный', degree: '3-я', correct: 20, userInput: null, checked: false },
+                    { name: 'Металлургический завод', forecast: 'Специализированный', degree: '3-я', correct: 40, userInput: null, checked: false }
+                ],
+                showResults: false
+            },
+            computed: {
+                checkedCount() {
+                    return this.enterprises.filter(e => e.checked === true).length;
+                }
+            },
+            methods: {
+                checkAnswers() {
+                    // помечаем все как проверенные
+                    this.enterprises.forEach(item => {
+                        item.checked = true;
+                    });
+                    this.showResults = true;
+                },
+                resetAll() {
+                    this.enterprises.forEach(item => {
+                        item.userInput = null;
+                        item.checked = false;
+                    });
+                    this.showResults = false;
+                },
+                shorten(name) {
+                    if (name.length > 22) {
+                        return name.replace(' (жизнеобеспечение)', ' (ЖО)').substring(0, 24) + '…';
+                    }
+                    return name;
+                }
+            }
+        });
+    })();
+</script>
+</body>
+</html>
