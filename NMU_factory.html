@@ -81,8 +81,8 @@
                 <div class="card" draggable="true" data-id="1">Остановить стекловаренную печь на 3 дня.</div>
                 <div class="card" draggable="true" data-id="2">Запретить использование дизельного генератора.</div>
                 <div class="card" draggable="true" data-id="3">Запретить движение автотранспорта без производственной необходимости.</div>
-                <div class="card" draggable="true" data-id="4">Снизить температуру в печи на 50°C (риск брака).</div>
-                <div class="card" draggable="true" data-id="5">Перевести тепловоз с мазута на газ (если есть возможность).</div>
+                <div class="card" draggable="true" data-id="4">Снизить температуру в печи на 50°C.</div>
+                <div class="card" draggable="true" data-id="5">Запретить проезд тепловоза на время НМУ.</div>
                 <div class="card" draggable="true" data-id="6">Остановить на ремонт газоочистку, чтобы потом работала лучше.</div>
                 <div class="card" draggable="true" data-id="7">Провести полив дорог для пылеподавления.</div>
             </div>
@@ -237,7 +237,7 @@
         htmlContent += `<p><b>2. Почему пункт 4 (Снижение температуры) рискован?</b><br>
         <span style="color: #555; font-size: 0.9em;">Может испортить продукцию. Изменится вязкость стекломассы, пойдет 100% брак и застывание в оборудовании.</span></p>`;
         htmlContent += `<p><b>3. Почему пункт 6 (Остановка газоочистки) запрещён?</b><br>
-        <span style="color: #555; font-size: 0.9em;">П. 9 Приказа № 651 запрещает остановку газоочистки в период НМУ. Это приведет к выбросу всей грязи без фильтрации.</span></p>`;
+        <span style="color: #555; font-size: 0.9em;">П. 9 Приказа № 651 запрещает остановку газоочистки в период НМУ. Это приведет к выбросу без фильтрации.</span></p>`;
 
         document.getElementById('modal-body').innerHTML = htmlContent;
         document.getElementById('resultModal').classList.add('active');
